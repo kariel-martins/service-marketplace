@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { AppError } from "./AppError";
 import { env } from "../../config/env";
-import { ZodError } from "zod";
+import { hasZodFastifySchemaValidationErrors } from "fastify-type-provider-zod";
 
 const DEBUG = env("DEBUG");
 
@@ -10,13 +10,16 @@ export function errorHandler(
   _req: FastifyRequest,
   res: FastifyReply,
 ) {
-  if (err instanceof ZodError) {
+  if (hasZodFastifySchemaValidationErrors(err)) {
     return res.status(400).send({
-      status: "error",
+      context: err.validationContext,
       message: "Erro de validação",
-      issues: err.flatten().fieldErrors,
+      issues: err.validation.map((error) => {
+          return { path: error.instancePath, message: error.message };
+        }),
     });
   }
+
   if (err instanceof AppError) {
     console.error(`[APP ERROR] ${err.context ?? "APP"} -> ${err.message}`);
 

@@ -1,26 +1,32 @@
 import { and, eq, gt } from "drizzle-orm";
 import app from "../../app";
 import { ExecuteHandler } from "../../core/handlers/executeHandler";
-import { refresh_tokens, users } from "../../database/Schemas";
+import { professionals, refresh_tokens, users } from "../../database/Schemas";
 import { AppError } from "../../core/Errors/AppError";
-import { tokenRefresh, User, UserData } from "./dtos/auth.dto.types";
+import {
+  RefreshWithProfessional,
+  tokenRefresh,
+  User,
+  UserData,
+  UserWithProfessional,
+} from "./dtos/auth.dto.types";
 
 export class AuthRepository {
   constructor(private readonly execute: ExecuteHandler) {}
 
-  public create(data: UserData): Promise<{users: User, refresh_tokens: tokenRefresh}> {
+  public create(
+    data: UserData,
+  ): Promise<{ users: User; refresh_tokens: tokenRefresh }> {
     return this.execute.repository(
       async () => {
-        
         return await app.db.transaction(async (tx) => {
-         
           const [user] = await tx
             .insert(users)
             .values({
               email: data.email,
               name: data.name,
               password_hash: data.password_hash,
-              role: data.role
+              role: "client",
             })
             .returning();
 
@@ -41,7 +47,7 @@ export class AuthRepository {
     );
   }
 
-  public createToken(data: any): Promise<any> {
+  public createToken(data: any): Promise<tokenRefresh> {
     return this.execute.repository(
       async () => {
         const result = await app.db
@@ -58,13 +64,13 @@ export class AuthRepository {
     );
   }
 
-  public getById(user_id: string): Promise<any> {
+  public getById(user_id: string): Promise<User> {
     return this.execute.repository(
       async () => {
         const result = await app.db
           .select()
           .from(users)
-          .where(eq(users.id, user_id))
+          .where(eq(users.id, user_id));
 
         return result[0];
       },
@@ -73,14 +79,22 @@ export class AuthRepository {
     );
   }
 
-  public getByEmail(email: string): Promise<User> {
+  public getByEmail(email: string): Promise<UserWithProfessional> {
     return this.execute.repository(
       async () => {
         const result = await app.db
           .select()
           .from(users)
           .where(eq(users.email, email))
-        return result[0];
+          .leftJoin(professionals, eq(professionals.user_id, users.id));
+
+        const user = result[0];
+
+        if (!user) {
+          throw new Error("Usuário não encontrado");
+        }
+
+        return user;
       },
       "Usuário não encontrado",
       "auth/auth.repository/getByEmail",
@@ -102,7 +116,7 @@ export class AuthRepository {
     }
   }
 
-  public async getTokenRefresh(user_id: string): Promise<any[]> {
+  public async getTokenRefresh(user_id: string): Promise<RefreshWithProfessional[]> {
     return this.execute.repository(
       async () => {
         const result = await app.db
@@ -114,7 +128,7 @@ export class AuthRepository {
               eq(refresh_tokens.revoked, false),
               gt(refresh_tokens.expires_at, new Date()),
             ),
-          );
+          ).leftJoin(professionals, eq(professionals.user_id, refresh_tokens.user_id))
         return result;
       },
       "Erro ao executar getTokenRefresh",
@@ -122,10 +136,7 @@ export class AuthRepository {
     );
   }
 
-  public updateRefreshToken(
-    refreshToken_id: string,
-    data: any,
-  ): Promise<any> {
+  public updateRefreshToken(refreshToken_id: string, data: any): Promise<any> {
     return this.execute.repository(
       async () => {
         const result = await app.db

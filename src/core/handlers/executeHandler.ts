@@ -13,7 +13,34 @@ export class ExecuteHandler {
 
       return result;
     } catch (error: any) {
-      console.error(`Erro em ${context}:`, error?.message, error?.stack);
+      console.error(`Erro em ${context}:`, error?.message);
+
+      if (error?.cause) {
+        console.error("DB Cause:", {
+          message: error.cause.message,
+          code: error.cause.code,
+          detail: error.cause.detail,
+          constraint: error.cause.constraint,
+        });
+      }
+
+      if (error?.code === "23503") {
+        throw new AppError(
+          "Registro relacionado não encontrado.",
+          400,
+          context,
+        );
+      }
+
+      //  not null
+      if (error?.code === "23502") {
+        throw new AppError("Campo obrigatório não informado.", 400, context);
+      }
+
+      // unique violation
+      if (error?.code === "23505") {
+        throw new AppError("Registro já existe.", 409, context);
+      }
 
       if (error instanceof AppError) throw error;
 

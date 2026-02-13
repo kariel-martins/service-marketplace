@@ -1,14 +1,13 @@
-
 export interface IJwtData {
-  scope?: string;
+  scope?: string | number;
   purpose: string;
-  role?: string,
+  role?: string;
   sub?: string;
 }
 
 export type JwtPayload = {
   sub: string;
-  scope: string;
-  role: "admin" | "manager" | "staff";
-  purpose: "ACCESS_TOKEN" | "REFRESH_TOKEN";
+  scope: string | number;
+  role: "worker" | "client";
+  purpose: string;
 };

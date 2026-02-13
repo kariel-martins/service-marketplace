@@ -68,8 +68,7 @@ export const clients = pgTable("clients", {
   name: text().notNull(),
   phone: text().notNull(),
   email: text().unique().notNull(),
-  no_show_count: integer(),
-  total_appointments: integer(),
+  total_services: integer(),
   created_at: timestamp("created_at", { withTimezone: true })
     .notNull()
     .default(sql`NOW()`),

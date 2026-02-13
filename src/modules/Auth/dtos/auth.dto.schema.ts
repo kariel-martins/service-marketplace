@@ -4,7 +4,6 @@ import { schemaVars } from "../../../share/utils/SchemasVars";
 export const createUsersSchema = z.object({
   name: schemaVars.text,
   email: schemaVars.email,
-  role: schemaVars.text,
   password: schemaVars.password,
   confirmPassword: schemaVars.password,
 });
@@ -22,6 +21,16 @@ export const resetPasswordSchema = z.object({
   password: schemaVars.password,
   confirmPassword: schemaVars.password,
 });
+
+export const AuthUserWithTokensResponceSchema = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  id: z.string(),
+  role: z.enum(["worker", "client"]),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime().nullable(),
+});
+
 
 export type createUsersData = z.infer<typeof createUsersSchema>;
 export type loginData = z.infer<typeof loginSchema>;

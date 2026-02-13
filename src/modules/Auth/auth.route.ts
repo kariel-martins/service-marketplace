@@ -4,6 +4,7 @@ import * as controller from "./auth.controller";
 
 import { z } from "zod";
 import {
+  AuthUserWithTokensResponceSchema,
   createUsersSchema,
   forgotPasswordSchema,
   loginSchema,
@@ -24,8 +25,7 @@ export async function authRoutes(app: FastifyInstance) {
         body: createUsersSchema,
         response: {
           201: z.object({
-            usersData: z.any(),
-            businessData: z.any(),
+            usersData: z.any()
           }),
         },
       },
@@ -43,8 +43,7 @@ export async function authRoutes(app: FastifyInstance) {
         body: loginSchema,
         response: {
           200: z.object({
-            usersData: z.any(),
-            businessData: z.any(),
+            usersData: z.any()
           }),
         },
       },

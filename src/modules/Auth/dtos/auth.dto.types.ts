@@ -1,5 +1,5 @@
 import { InferInsertModel, InferSelectModel } from "drizzle-orm";
-import { refresh_tokens, users } from "../../../database/Schemas";
+import { professionals, refresh_tokens, users } from "../../../database/Schemas";
 
 export type User = InferSelectModel<typeof users>
 export type InsertUser = InferInsertModel<typeof users>
@@ -26,7 +26,6 @@ export type UserData = {
     name: string,
     email: string,
     password_hash: string,
-    role: "worker" | "client",
     tokenRefresh: string
 }
 
@@ -35,6 +34,14 @@ export type UserDataService = {
     email: string,
     password: string,
     confirmPassword: string,
-    role: "worker" | "client",
+}
 
+export type UserWithProfessional = {
+    users: User,
+    professionals: InferSelectModel<typeof professionals> | null
+}
+
+export type RefreshWithProfessional = {
+    refresh_tokens: tokenRefresh,
+    professionals: InferSelectModel<typeof professionals> | null
 }

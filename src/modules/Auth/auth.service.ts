@@ -5,7 +5,7 @@ import { IJWTService } from "../../share/interfaces/IJWTService";
 import { JwtPayload } from "../../share/types/JWTService";
 import { AuthRepository } from "./auth.repository";
 import { loginData } from "./dtos/auth.dto.schema";
-import { User, UserData, UserDataService, UserTokensResponce } from "./dtos/auth.dto.types";
+import { UserDataService, UserTokensResponce } from "./dtos/auth.dto.types";
 
 export class AuthService {
   constructor(
@@ -37,7 +37,6 @@ export class AuthService {
           password_hash,
           tokenRefresh: refreshTokenHash,
           ...data,
-          role: "worker"
         });
 
         const {password_hash: password, ...rest} = users
@@ -77,10 +76,10 @@ export class AuthService {
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 2);
 
-        const {password_hash, ...rest} = await this.repo.getByEmail(
+        const {users, professionals} = await this.repo.getByEmail(
           data.email
         );
-
+        const { password_hash, ...rest } = users
         const isValid = await this.hash.compareText(
           data.password,
           password_hash,
@@ -109,6 +108,7 @@ export class AuthService {
 
         const accessToken = await this.token.sign(
           { purpose: "ACCESS_TOKEN", 
+            scope: professionals ? professionals.id : undefined,
             role: rest.role,
             sub: rest.id
            },
@@ -138,12 +138,12 @@ export class AuthService {
 
         for (const token of tokens) {
           const match = await this.hash.compareText(
-            payload.scope,
-            token.token_hash,
+            String(payload.scope),
+            token.refresh_tokens.token_hash,
           );
 
           if (match) {
-            if (token.revoked) {
+            if (token.refresh_tokens.revoked) {
               await this.repo.revokeAllUserTokens(payload.sub);
               throw new AppError("Sessão comprometida", 401);
             }
@@ -166,7 +166,7 @@ export class AuthService {
 
         const user = await this.repo.getById(newTokenRefresh.user_id)
 
-        await this.repo.updateRefreshToken(validToken?.id, {
+        await this.repo.updateRefreshToken(validToken.refresh_tokens.id, {
           revoked: true,
         });
 
@@ -182,7 +182,8 @@ export class AuthService {
         const newAccessToken = await this.token.sign(
           {
             purpose: "ACCESS_TOKEN",
-            role: user.user_role,
+            scope: validToken.professionals ? validToken.professionals.id : "",
+            role: user.role,
             sub: user.id,
           },
           "15m",
@@ -203,8 +204,9 @@ export class AuthService {
         const token = await this.token.sign(
           {
             purpose: "FORGOT_PASSWORD",
-            role: result.role,
-            sub: result.id,
+            scope: result.professionals?.id,
+            role: result.users.role,
+            sub: result.users.id,
           },
           "15m",
         );
