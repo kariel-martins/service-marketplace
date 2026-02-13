@@ -10,15 +10,11 @@ volumes:
 
 services:
 
-  postgres:
+  db:
     image: postgres:17
     container_name: service_marketplace_db
-
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin123
-      POSTGRES_DB: service_marketplace_database
-
+    env_file:
+      - .env.development
     restart: always
 
     ports:
@@ -30,23 +26,27 @@ services:
     networks:
       - service_marketplace
 
-
-  postgres_test:
+  db_test:
     image: postgres:17
     container_name: service_marketplace_db_test
-
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: test1234
-      POSTGRES_DB: service_marketplace_database_test
-
+    env_file:
+      - .env.test
     restart: always
 
     ports:
-      - "5432:5432"
-
+      - "5433:5432"
     volumes:
       - postgres_test_data:/var/lib/postgresql/data
 
     networks:
       - service_marketplace
+
+  
+  service_marketplace: 
+    build: .
+    depends_on:
+      - db
+    env_file:
+      - .env.docker
+    ports: 
+      - "${PORT:-5520}:${PORT:-5520}"

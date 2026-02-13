@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { availiabilityResponceSchema, createAvailiability, updateAvailiability } from "./dtos/availiability.dto.schema";
 import { z } from "zod"
 import * as controller from "../Availiability/availiability.controller"
 import { Authorization } from "../../share/middlewares/Autorizations";
+import { availiabilityResponceSchema, createAvailiability, updateAvailiability } from "./dtos/availiability.dto.schema";
 
 export async function AvailiabilityRoutes(app: FastifyInstance) {
   const typedApp = app.withTypeProvider<ZodTypeProvider>();

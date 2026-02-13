@@ -15,7 +15,10 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx --watch --env-file=.env.development src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "cross-env NODE_ENV=development tsx --watch --env-file=.env.development src/server.ts",
+    "docker": "cross-env NODE_ENV=docker docker-compose --env-file .env.docker  up --build",
     "db": "npx drizzle-kit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -27,6 +30,7 @@
     "@fastify/swagger": "^9.7.0",
     "@scalar/fastify-api-reference": "^1.44.15",
     "bcryptjs": "^3.0.3",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.2.4",
     "drizzle-kit": "^0.31.8",
     "drizzle-orm": "^0.45.1",

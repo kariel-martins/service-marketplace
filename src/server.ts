@@ -6,7 +6,7 @@ dotenv.config();
 
 function bootstrap() {
   try {
-    app.listen({ port: Number(env("PORT") || 3030) });
+    app.listen({ port: Number(env("PORT") || 3030), host: '0.0.0.0'});
     console.log(`Servidor rodando: http://localhost:${env("PORT")}`);
     console.log(`Documentação rodando: http://localhost:${env("PORT")}/docs`);
   } catch (error) {

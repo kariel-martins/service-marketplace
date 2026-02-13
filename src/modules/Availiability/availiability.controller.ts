@@ -1,9 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { makeAvailiabilityService } from "./availiability.factory";
-import {
-  createAvailiabilityData,
-  updateAvailiabilityData,
-} from "./dtos/availiability.dto.schema";
+import { createAvailiabilityData, updateAvailiabilityData } from "./dtos/availiability.dto.schema";
+
 
 export const create = async (request: FastifyRequest, reply: FastifyReply) => {
   const Availiability = makeAvailiabilityService();
