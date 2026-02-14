@@ -1,5 +1,5 @@
 {
-  "id": "e3b2c3e0-e516-4fb1-b1ee-443a0ec06afe",
+  "id": "44439519-141d-41ff-bf1a-0a255f75e485",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -217,14 +217,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "no_show_count": {
-          "name": "no_show_count",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "total_appointments": {
-          "name": "total_appointments",
+        "total_services": {
+          "name": "total_services",
           "type": "integer",
           "primaryKey": false,
           "notNull": false

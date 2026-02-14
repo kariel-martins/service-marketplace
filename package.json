@@ -16,9 +16,9 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/server.js",
-    "dev": "cross-env NODE_ENV=development tsx --watch --env-file=.env.development src/server.ts",
-    "docker": "cross-env NODE_ENV=docker docker-compose --env-file .env.docker  up --build",
+    "prod": "cross-env NODE_ENV=production node dist/server.js",
+    "dev": "cross-env NODE_ENV=development tsx --watch src/server.ts",
+    "docker": "cross-env NODE_ENV=docker docker-compose  up --build",
     "db": "npx drizzle-kit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

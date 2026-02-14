@@ -28,8 +28,7 @@ CREATE TABLE "clients" (
 	"name" text NOT NULL,
 	"phone" text NOT NULL,
 	"email" text NOT NULL,
-	"no_show_count" integer,
-	"total_appointments" integer,
+	"total_services" integer,
 	"created_at" timestamp with time zone DEFAULT NOW() NOT NULL,
 	CONSTRAINT "clients_email_unique" UNIQUE("email")
 );

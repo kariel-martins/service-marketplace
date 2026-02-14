@@ -6,5 +6,5 @@ dist
 
 !.env.example
 
-coverage/
+coverage
 .vscode
